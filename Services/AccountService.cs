@@ -119,10 +119,10 @@ namespace GrpcServicePiter.Services
             // формируем из данных объект Worker и добавляем его в список Workers
             var worker = new Worker
             {
-                FirstName = request.Worker.FirstName ?? "БезИмени", // контроль null
-                LastName = request.Worker.LastName ?? "Инкогнито", // контроль null
-                MiddleName = request.Worker.MiddleName ?? "", // контроль null
-                BirthDay = request.Worker.BirthDay ?? "день рождения - тайна", // контроль null
+                FirstName = request.Worker.FirstName,
+                LastName = request.Worker.LastName,
+                MiddleName = request.Worker.MiddleName,
+                BirthDay = request.Worker.BirthDay,
                 Sex = request.Worker.Sex,
                 HaveChildren = request.Worker.HaveChildren
             };
@@ -167,10 +167,10 @@ namespace GrpcServicePiter.Services
                 if (worker == null) // странно, а кто это был?
                     throw new RpcException(statusNotFound);
 
-                worker.FirstName = request.Worker.FirstName ?? "Имя ???"; // контроль null
-                worker.LastName = request.Worker.LastName ?? ""; // контроль null
-                worker.MiddleName = request.Worker.MiddleName ?? ""; // контроль null
-                worker.BirthDay = request.Worker.BirthDay ?? "опять ДР не добавлен"; // контроль null
+                worker.FirstName = request.Worker.FirstName;
+                worker.LastName = request.Worker.LastName;
+                worker.MiddleName = request.Worker.MiddleName;
+                worker.BirthDay = request.Worker.BirthDay;
                 worker.Sex = request.Worker.Sex;
                 worker.HaveChildren = request.Worker.HaveChildren;
 
