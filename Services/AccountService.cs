@@ -18,7 +18,7 @@ namespace GrpcServicePiter.Services
             this.db = db;
         }
 
-        // 1) “ест св€зи
+        // 1.1) “ест св€зи
         public override Task<HelloReply> SayHello(HelloRequest request, ServerCallContext context)
         {
             try
@@ -42,6 +42,7 @@ namespace GrpcServicePiter.Services
             
         }
 
+        // 1.2) «апрос-ќтвет
         public override async Task SayHelloStream(IAsyncStreamReader<HelloRequest> requestStream, 
             IServerStreamWriter<HelloReply> responseStream, ServerCallContext context)
         {
@@ -67,15 +68,16 @@ namespace GrpcServicePiter.Services
                 {
                     Id = item.Id,
                     FirstName = item.FirstName,
-                    LastName = item.LastName ?? "",
-                    MiddleName = item.MiddleName ?? "",
-                    BirthDay = item.BirthDay ?? "",
+                    LastName = item.LastName,
+                    MiddleName = item.MiddleName,
+                    BirthDay = item.BirthDay,
                     Sex = item.Sex,
                     HaveChildren = item.HaveChildren
                 }).ToList();
                 listReply.Workers.AddRange(workerList);
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 // нет обработки ошибок, возвращаем пустой список
                 _logger.Log(LogLevel.Error, $"{ex.HResult} {ex.Message}");
@@ -105,13 +107,14 @@ namespace GrpcServicePiter.Services
                 };
                 return await Task.FromResult(WorkerReply);
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 // нет обработки ошибок, возвращаем пустой объект
                 _logger.Log(LogLevel.Error, $"{ex.HResult} {ex.Message}");
                 return await Task.FromResult(new WorkerReply());
             }
-            
+
         }
         // 2.3 добавление работника (нас стало еще больше)
         public override async Task<Answer> CreateWorker(CreateWorkerRequest request, ServerCallContext context)
@@ -144,7 +147,8 @@ namespace GrpcServicePiter.Services
                 if (db.Workers.Any())
                     answer.Id = db.Workers.OrderBy(x => x.Id).Last().Id;
 
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 answer.Code = ex.HResult;
                 answer.Text = ex.Message;
@@ -161,6 +165,7 @@ namespace GrpcServicePiter.Services
                 Code = 0,
                 Text = ""
             };
+
             try
             {
                 var worker = await db.Workers.FindAsync(request.Worker.Id); // ищем работника
@@ -177,7 +182,8 @@ namespace GrpcServicePiter.Services
                 // обновление записи
                 await db.SaveChangesAsync();
 
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 answer.Code = ex.HResult;
                 answer.Text = ex.Message;
@@ -194,6 +200,7 @@ namespace GrpcServicePiter.Services
                 Code = 0,
                 Text = ""
             };
+
             try
             {
                 var worker = await db.Workers.FindAsync(request.Id); // ищем работника

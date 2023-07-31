@@ -2,17 +2,17 @@
 {
     public class Worker
     {
-        public int Id { get; set; }
+        public int Id { get; set; } // ID
         public string FirstName { get; set; } // имя
         public string? LastName { get; set; } // фамилия
         public string? MiddleName { get; set; } // отчество
         public string? BirthDay { get; set; } // дата рождения
-        public bool Sex { get; set; } // пол
+        public bool Sex { get; set; } // пол (мужской или женский, третьего не дано)
         public bool HaveChildren { get; set; } // наличие детей
 
-        public Worker()
+        public Worker() // если хотим заполнить данные позже
         {
-
+            
         }
 
         public Worker(int Id, string FirstName, string BirthDay = "",
@@ -26,7 +26,6 @@
             this.BirthDay = BirthDay;
             this.Sex = Sex;
             this.HaveChildren = HaveChildren;
-
         }
 
         
