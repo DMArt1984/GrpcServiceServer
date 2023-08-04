@@ -2,6 +2,7 @@
 {
     static public class Settings
     {
+        // получение строки подключения в БД
         static public string GetConnectString(string path = "setting.txt")
         {
             string connect = "Host=localhost;Username=postgres;Password=12345;Database=PiterDB5"; // Второй вариант: "Server=localhost;port=643;Database=PiterDB3;Username=postgres;Password=12345;"
