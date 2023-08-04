@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // For instructions on how to configure Kestrel and gRPC clients on macOS, visit https://go.microsoft.com/fwlink/?linkid=2099682
 
 // строка подключения
-string connStr = "Host=localhost;Username=postgres;Password=12345;Database=PiterDB5"; // Второй вариант: "Server=localhost;port=643;Database=PiterDB3;Username=postgres;Password=12345;"
+string connStr = Settings.GetConnectString(); // "Host=localhost;Username=postgres;Password=12345;Database=PiterDB5"; // Второй вариант: "Server=localhost;port=643;Database=PiterDB3;Username=postgres;Password=12345;"
 // добавляем контекст ApplicationContext в качестве сервиса в приложение
 builder.Services.AddDbContext<ApplicationContext>(options => options.UseNpgsql(connStr));
 

@@ -15,19 +15,6 @@
             
         }
 
-        //public Worker(int Id, string FirstName, string BirthDay = "",
-        //    string LastName = "", string MiddleName = "",
-        //    bool Sex = false, bool HaveChildren = false)
-        //{
-        //    this.Id = Id;
-        //    this.FirstName = FirstName;
-        //    this.LastName = LastName;
-        //    this.MiddleName = MiddleName;
-        //    this.BirthDay = BirthDay;
-        //    this.Sex = Sex;
-        //    this.HaveChildren = HaveChildren;
-        //}
-
         
     }
 }

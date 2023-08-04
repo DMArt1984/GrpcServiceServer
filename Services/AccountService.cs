@@ -6,7 +6,7 @@ namespace GrpcServicePiter.Services
 {
     public class AccountService : Accounter.AccounterBase
     {
-        Company company;
+        SourcePG source;
 
         private readonly ILogger<AccountService> _logger;
 
@@ -15,7 +15,7 @@ namespace GrpcServicePiter.Services
         public AccountService(ILogger<AccountService> logger, ApplicationContext db)
         {
             _logger = logger;
-            company = new Company(db);
+            source = new SourcePG(db);
         }
 
         // 1.1) Тест связи
@@ -23,7 +23,7 @@ namespace GrpcServicePiter.Services
         {
             try
             {
-                int count = company.Count(); // количество работников
+                int count = source.Count(); // количество работников
                 return Task.FromResult(new HelloReply
                 {
                     Message = "Привет, " + request.Name + " (" + context.Host + $") ! Нас уже {count}",
@@ -60,11 +60,11 @@ namespace GrpcServicePiter.Services
         // 2.1 отправляем список работников
         public override Task<ListReply> ListWorkers(Empty request, ServerCallContext context)
         {
-            var listReply = new ListReply();    // определяем список
+            var listReply = new ListReply(); // определяем список
             try
             {
                 // преобразуем каждый объект Worker в объект WorkerReply т.к. эти объекты могут не совпадать
-                var workerList = company.List().Select(item => Adapter.ConvertToReply(item)).ToList();
+                var workerList = source.List().Select(item => Adapter.ConvertToReply(item)).ToList();
                 listReply.Workers.AddRange(workerList);
 
             }
@@ -80,7 +80,7 @@ namespace GrpcServicePiter.Services
         {
             try
             {
-                var worker = await company.FindById(request.Id);
+                var worker = await source.FindById(request.Id);
                 // если работник не найден, генерируем исключение
                 if (worker == null)
                     throw new RpcException(statusNotFound);
@@ -112,8 +112,7 @@ namespace GrpcServicePiter.Services
             try
             {
                 var worker = Adapter.ConvertToWorker(request.Worker);
-                answer.Id = await company.Create(worker);
-
+                answer.Id = await source.Create(worker);
             }
             catch (Exception ex)
             {
@@ -135,7 +134,7 @@ namespace GrpcServicePiter.Services
 
             try
             {
-                int result = await company.Update(Adapter.ConvertToWorker(request.Worker));
+                int result = await source.Update(Adapter.ConvertToWorker(request.Worker));
                 if (result == 0)
                     throw new RpcException(statusNotFound);
 
@@ -160,7 +159,7 @@ namespace GrpcServicePiter.Services
 
             try
             {
-                int result = await company.DeleteById(request.Id);
+                int result = await source.DeleteById(request.Id);
                 if (result == 0)
                     throw new RpcException(statusNotFound);
 

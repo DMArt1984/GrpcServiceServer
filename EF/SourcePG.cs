@@ -2,37 +2,34 @@
 
 namespace GrpcServicePiter
 {
-    public class Company
+    public class SourcePG: ISource
     {
+        // обработка ошибок ложится на использующих данный класс!
+
         ApplicationContext db;
-        public Company(ApplicationContext db)
+        public SourcePG(ApplicationContext db)
         {
             this.db = db;
         }
 
-        // количество записей
-        public int Count() 
-        {
-            return db.Workers.Count(); 
-        }
 
-        // список записепй
-        public List<Worker> List() 
-        {
-            return db.Workers.ToList();
-        }
+        // количество записей
+        public int Count() => db.Workers.Count(); 
+
+
+        // список записей
+        public List<Worker> List() => db.Workers.ToList();
+        
 
         // поиск записи по ID
-        public async Task<Worker> FindById(int Id) 
-        {
-            return await db.Workers.FindAsync(Id);
-        }
+        public async Task<Worker> FindById(int Id) => await db.Workers.FindAsync(Id);
+        
 
         // добавить (создать) запись
-        public async Task<int> Create(Worker worker) 
+        public async Task<int> Create(Worker newWorker)
         {
             // добавление работника
-            await db.Workers.AddAsync(worker);
+            await db.Workers.AddAsync(newWorker);
             await db.SaveChangesAsync();
 
             // получаем ID
@@ -43,7 +40,7 @@ namespace GrpcServicePiter
             return 0;
         }
 
-        // Обновить запись
+        // обновить запись
         public async Task<int> Update(Worker newWorker)
         {
             var worker = await db.Workers.FindAsync(newWorker.Id); // ищем работника
@@ -64,7 +61,7 @@ namespace GrpcServicePiter
             return newWorker.Id;
         }
 
-        // Удалить запись
+        // удалить запись
         public async Task<int> DeleteById(int Id)
         {
             var worker = await db.Workers.FindAsync(Id); // ищем работника
