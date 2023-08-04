@@ -10,23 +10,23 @@
         public bool Sex { get; set; } // пол (мужской или женский, третьего не дано)
         public bool HaveChildren { get; set; } // наличие детей
 
-        public Worker() // если хотим заполнить данные позже
+        public Worker()
         {
             
         }
 
-        public Worker(int Id, string FirstName, string BirthDay = "",
-            string LastName = "", string MiddleName = "",
-            bool Sex = false, bool HaveChildren = false)
-        {
-            this.Id = Id;
-            this.FirstName = FirstName;
-            this.LastName = LastName;
-            this.MiddleName = MiddleName;
-            this.BirthDay = BirthDay;
-            this.Sex = Sex;
-            this.HaveChildren = HaveChildren;
-        }
+        //public Worker(int Id, string FirstName, string BirthDay = "",
+        //    string LastName = "", string MiddleName = "",
+        //    bool Sex = false, bool HaveChildren = false)
+        //{
+        //    this.Id = Id;
+        //    this.FirstName = FirstName;
+        //    this.LastName = LastName;
+        //    this.MiddleName = MiddleName;
+        //    this.BirthDay = BirthDay;
+        //    this.Sex = Sex;
+        //    this.HaveChildren = HaveChildren;
+        //}
 
         
     }

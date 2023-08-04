@@ -6,7 +6,7 @@ namespace GrpcServicePiter.Services
 {
     public class AccountService : Accounter.AccounterBase
     {
-        ApplicationContext db;
+        Company company;
 
         private readonly ILogger<AccountService> _logger;
 
@@ -15,7 +15,7 @@ namespace GrpcServicePiter.Services
         public AccountService(ILogger<AccountService> logger, ApplicationContext db)
         {
             _logger = logger;
-            this.db = db;
+            company = new Company(db);
         }
 
         // 1.1) Тест связи
@@ -23,7 +23,7 @@ namespace GrpcServicePiter.Services
         {
             try
             {
-                int count = db.Workers.Count(); // количество работников
+                int count = company.Count(); // количество работников
                 return Task.FromResult(new HelloReply
                 {
                     Message = "Привет, " + request.Name + " (" + context.Host + $") ! Нас уже {count}",
@@ -63,17 +63,8 @@ namespace GrpcServicePiter.Services
             var listReply = new ListReply();    // определяем список
             try
             {
-                // преобразуем каждый объект Worker в объект WorkerReply
-                var workerList = db.Workers.Select(item => new WorkerReply
-                {
-                    Id = item.Id,
-                    FirstName = item.FirstName,
-                    LastName = item.LastName,
-                    MiddleName = item.MiddleName,
-                    BirthDay = item.BirthDay,
-                    Sex = item.Sex,
-                    HaveChildren = item.HaveChildren
-                }).ToList();
+                // преобразуем каждый объект Worker в объект WorkerReply т.к. эти объекты могут не совпадать
+                var workerList = company.List().Select(item => Adapter.ConvertToReply(item)).ToList();
                 listReply.Workers.AddRange(workerList);
 
             }
@@ -89,22 +80,14 @@ namespace GrpcServicePiter.Services
         {
             try
             {
-                var worker = await db.Workers.FindAsync(request.Id);
+                var worker = await company.FindById(request.Id);
                 // если работник не найден, генерируем исключение
                 if (worker == null)
                     throw new RpcException(statusNotFound);
 
                 // преобразуем объект Worker в объект WorkerReply
-                WorkerReply WorkerReply = new WorkerReply()
-                {
-                    Id = worker.Id,
-                    FirstName = worker.FirstName,
-                    LastName = worker.LastName,
-                    MiddleName = worker.MiddleName,
-                    BirthDay = worker.BirthDay,
-                    Sex = worker.Sex,
-                    HaveChildren = worker.HaveChildren
-                };
+                WorkerReply WorkerReply = Adapter.ConvertToReply(worker);
+
                 return await Task.FromResult(WorkerReply);
 
             }
@@ -119,17 +102,6 @@ namespace GrpcServicePiter.Services
         // 2.3 добавление работника (нас стало еще больше)
         public override async Task<Answer> CreateWorker(CreateWorkerRequest request, ServerCallContext context)
         {
-            // формируем из данных объект Worker и добавляем его в список Workers
-            var worker = new Worker
-            {
-                FirstName = request.Worker.FirstName,
-                LastName = request.Worker.LastName,
-                MiddleName = request.Worker.MiddleName,
-                BirthDay = request.Worker.BirthDay,
-                Sex = request.Worker.Sex,
-                HaveChildren = request.Worker.HaveChildren
-            };
-
             var answer = new Answer() // ответ по умолчянию
             {
                 Id = 0,
@@ -139,13 +111,8 @@ namespace GrpcServicePiter.Services
 
             try
             {
-                // добавление записи
-                await db.Workers.AddAsync(worker);
-                await db.SaveChangesAsync();
-
-                // получаем ID
-                if (db.Workers.Any())
-                    answer.Id = db.Workers.OrderBy(x => x.Id).Last().Id;
+                var worker = Adapter.ConvertToWorker(request.Worker);
+                answer.Id = await company.Create(worker);
 
             }
             catch (Exception ex)
@@ -168,19 +135,9 @@ namespace GrpcServicePiter.Services
 
             try
             {
-                var worker = await db.Workers.FindAsync(request.Worker.Id); // ищем работника
-                if (worker == null) // странно, а кто это был?
+                int result = await company.Update(Adapter.ConvertToWorker(request.Worker));
+                if (result == 0)
                     throw new RpcException(statusNotFound);
-
-                worker.FirstName = request.Worker.FirstName;
-                worker.LastName = request.Worker.LastName;
-                worker.MiddleName = request.Worker.MiddleName;
-                worker.BirthDay = request.Worker.BirthDay;
-                worker.Sex = request.Worker.Sex;
-                worker.HaveChildren = request.Worker.HaveChildren;
-
-                // обновление записи
-                await db.SaveChangesAsync();
 
             }
             catch (Exception ex)
@@ -203,13 +160,9 @@ namespace GrpcServicePiter.Services
 
             try
             {
-                var worker = await db.Workers.FindAsync(request.Id); // ищем работника
-                if (worker == null) // не нашли, похоже уже удален
+                int result = await company.DeleteById(request.Id);
+                if (result == 0)
                     throw new RpcException(statusNotFound);
-
-                // удаление записи
-                db.Workers.Remove(worker); 
-                await db.SaveChangesAsync();
 
             } catch(Exception ex)
             {
