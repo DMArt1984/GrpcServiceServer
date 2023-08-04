@@ -2,10 +2,11 @@
 {
     static public class Adapter
     {
-        static public Worker ConvertToWorker(string firstName, string lastName, string middleName, string birthDay, bool sex, bool haveChildren)
+        static public Worker ConvertToWorker(int Id, string firstName, string lastName, string middleName, string birthDay, bool sex, bool haveChildren)
         {
             return new Worker
             {
+                Id = Id,
                 FirstName = firstName,
                 LastName = lastName,
                 MiddleName = middleName,
@@ -19,6 +20,7 @@
         {
             return  new WorkerReply
             {
+                Id = worker.Id,
                 FirstName = worker.FirstName,
                 LastName = worker.LastName,
                 MiddleName = worker.MiddleName,
@@ -32,6 +34,7 @@
         {
             return new Worker
             {
+                Id = workerReply.Id,
                 FirstName = workerReply.FirstName,
                 LastName = workerReply.LastName,
                 MiddleName = workerReply.MiddleName,
